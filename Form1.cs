@@ -169,6 +169,7 @@ namespace WinFormsApp.Transaction
             else
             {
                 ShowAllDepartment();
+                MessageBox.Show("บันทึกข้อมูลเรียบร้อย");
             }
         }
 
@@ -207,6 +208,7 @@ namespace WinFormsApp.Transaction
             else
             {
                 ShowAllDepartment();
+                MessageBox.Show("ปรับปรุงข้อมูลเรียบร้อย");
             }
         }
     }
