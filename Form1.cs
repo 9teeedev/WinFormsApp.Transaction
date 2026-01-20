@@ -1,4 +1,5 @@
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
+
 using System.Data;
 
 namespace WinFormsApp.Transaction
@@ -70,7 +71,11 @@ namespace WinFormsApp.Transaction
             if (action == "insert")
             {
                 InsertRecord();
+            }else if (action == "update")
+            {
+                Update_Record();
             }
+
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -91,15 +96,16 @@ namespace WinFormsApp.Transaction
             int row = e.RowIndex;
             dept_id = dgvDepartment.Rows[row].Cells[0].Value.ToString();
             action = "update";
-            txtID.Text = dgvDepartment.Rows[row].Cells[1].Value.ToString();
-            txtName.Text = dgvDepartment.Rows[row].Cells[2].Value.ToString();
+            txtID.Text = dgvDepartment.Rows[row].Cells[0].Value.ToString();
+            txtName.Text = dgvDepartment.Rows[row].Cells[1].Value.ToString();
+            txtDesc.Text = dgvDepartment.Rows[row].Cells[2].Value.ToString();
             txtPhone.Text = dgvDepartment.Rows[row].Cells[3].Value.ToString();
             txtMail.Text = dgvDepartment.Rows[row].Cells[4].Value.ToString();
         }
 
         private void DeleteRecord()
         {
-            SqlConnection tr;
+            SqlTransaction tr;
             SqlConnection conn = DBConnect.Company_DB_Connect();
             tr = conn.BeginTransaction();
             try
@@ -125,7 +131,7 @@ namespace WinFormsApp.Transaction
             catch
             {
                 MessageBox.Show("เกิดข้อผิดพลาดในการลบข้อมูล", "แจ้งข้อผิดพลาด", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                tr.RollBack();
+                tr.Rollback();
             }
             conn.Close();
         }
@@ -136,6 +142,72 @@ namespace WinFormsApp.Transaction
             com.Connection = conn;
             com.CommandType = CommandType.StoredProcedure;
             com.CommandText = "Insert_Department";
+            com.Parameters.Add("@id", SqlDbType.Char).Value = txtID.Text;
+            com.Parameters.Add("@name", SqlDbType.NVarChar).Value = txtName.Text;
+            com.Parameters.Add("@desc", SqlDbType.NVarChar).Value = txtDesc.Text;
+            com.Parameters.Add("@phone", SqlDbType.VarChar).Value = txtPhone.Text;
+            com.Parameters.Add("@mail", SqlDbType.VarChar).Value = txtMail.Text;
+
+            com.Parameters.Add("@returnVal", SqlDbType.Int);
+            com.Parameters["@returnVal"].Direction = ParameterDirection.ReturnValue;
+            com.ExecuteNonQuery();
+            conn.Close();
+
+            int result = (int)com.Parameters["@returnVal"].Value;
+
+            if (result == -1)
+            {
+                MessageBox.Show("รหัสแผนกซ้ำ");
+                txtID.Focus();
+                txtID.SelectAll();
+                return;
+            }else if(result == 0)
+            {
+                MessageBox.Show("เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล");
+                return;
+            }
+            else
+            {
+                ShowAllDepartment();
+            }
+        }
+
+        private void Update_Record()
+        {
+            SqlConnection conn = DBConnect.Company_DB_Connect();
+            SqlCommand com = new SqlCommand();
+
+            com.Connection = conn;
+            com.CommandType = CommandType.StoredProcedure;
+            com.CommandText = "Update_Department";
+            com.Parameters.Add("@curr_id", SqlDbType.Char).Value = dept_id;
+            com.Parameters.Add("@id", SqlDbType.Char).Value = txtID.Text;
+            com.Parameters.Add("@name", SqlDbType.NVarChar).Value = txtName.Text;
+            com.Parameters.Add("@desc", SqlDbType.NVarChar).Value = txtDesc.Text;
+            com.Parameters.Add("@phone", SqlDbType.VarChar).Value = txtPhone.Text;
+            com.Parameters.Add("@mail", SqlDbType.VarChar).Value = txtMail.Text;
+            // กำหนดพารามิเตอร์ที่รับข้อมูลกลับ
+            com.Parameters.Add("@returnVal", SqlDbType.Int);
+            com.Parameters["@returnVal"].Direction = ParameterDirection.ReturnValue;
+            com.ExecuteNonQuery();
+            conn.Close();
+            int result = (int)com.Parameters["@returnVal"].Value;
+            if (result == -1)
+            {
+                MessageBox.Show("รหัสแผนกซ้ำ");
+                txtID.Focus();
+                txtID.SelectAll();
+                return;
+            }
+            else if (result == 0)
+            {
+                MessageBox.Show("เกิดข้อผิดพลาดในการปรับปรุงข้อมูล");
+                return;
+            }
+            else
+            {
+                ShowAllDepartment();
+            }
         }
     }
 }
