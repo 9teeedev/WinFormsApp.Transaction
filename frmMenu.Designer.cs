@@ -48,12 +48,14 @@
             departmentToolStripMenuItem.Name = "departmentToolStripMenuItem";
             departmentToolStripMenuItem.Size = new Size(82, 20);
             departmentToolStripMenuItem.Text = "Department";
+            departmentToolStripMenuItem.Click += departmentToolStripMenuItem_Click;
             // 
             // usersToolStripMenuItem
             // 
             usersToolStripMenuItem.Name = "usersToolStripMenuItem";
             usersToolStripMenuItem.Size = new Size(47, 20);
             usersToolStripMenuItem.Text = "Users";
+            usersToolStripMenuItem.Click += usersToolStripMenuItem_Click;
             // 
             // frmMenu
             // 
@@ -61,6 +63,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(menuStrip1);
+            IsMdiContainer = true;
             MainMenuStrip = menuStrip1;
             Name = "frmMenu";
             Text = "frmMenu";

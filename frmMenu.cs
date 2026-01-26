@@ -14,5 +14,20 @@ namespace WinFormsApp.Transaction
         {
             InitializeComponent();
         }
+
+        private void departmentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form fr = new frmDepartment();
+            fr.MdiParent = this;
+            fr.Show();
+
+        }
+
+        private void usersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form fr = new addUser();
+            fr.MdiParent = this;
+            fr.Show();
+        }
     }
 }
